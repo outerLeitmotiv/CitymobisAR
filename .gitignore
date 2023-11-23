@@ -1,0 +1,7 @@
+# Project exclude paths
+/.gradle/
+.idea
+*.log
+*.hprof
+google-services.json
+/build/
