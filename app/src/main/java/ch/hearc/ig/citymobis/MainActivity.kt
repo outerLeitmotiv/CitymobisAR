@@ -21,51 +21,38 @@ import io.github.sceneview.ar.*
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.model.ModelInstance
 import io.github.sceneview.node.ModelNode
+import com.google.ar.core.Anchor
+import com.google.ar.core.Config.CloudAnchorMode;
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.firebase.*
+import io.github.sceneview.model.Model
 
 
 class MainActivity : ComponentActivity() {
+    private lateinit var sceneView: SceneView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            CitymobisTheme {
-                ARScreen()
+        setContentView(R.layout.activity_main)
+
+        sceneView = findViewById(R.id.sceneView)
+
+        val modelUrl = "gs://citymobis-89b20.appspot.com/eglise_rouge3.gltf"
+
+        Model.loadAsync(modelUrl).thenAccept { model ->
+            val node = Node().apply {
+                setModel(model)
+                // Set other properties like position, rotation, etc.
             }
+            sceneView.scene.addChild(node)
+        }.exceptionally { throwable ->
+            // Handle exceptions
         }
+
+
     }
-}
 
-@Composable
-fun ARScreen() {
-    val nodes = rememberNodes()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        ARScene(
-            modifier = Modifier,
-            childNodes = nodes,
-            /*onTapAR = { motionEvent, hitResult ->
-            onTap currently causing issues, TODO: fix
-                // Fetch your 3D model from Firebase
-                // For simplicity, assuming you have a function getModelFromFirebase() that returns a ModelInstance
-                val modelInstance = getModelFromFirebase()
 
-                // Create an AnchorNode with the hit result and add it to the nodes
-                val anchorNode = AnchorNode(hitResult.createAnchor()).apply {
-                    addChildNode(ModelNode(modelInstance))
-                }
-                nodes += anchorNode
-            },
-            // Other ARScene parameters as needed
-            // ...*/
-        )
-    }
-}
-
-// Dummy function for fetching model - Replace with actual Firebase fetching logic
-fun getModelFromFirebase(): ModelInstance? {
-    // Implement logic to fetch and return a ModelInstance from Firebase
-    // This is just a placeholder
-    // TODO: add 3D models to firebase
-    return null
 }
 
 
