@@ -8,6 +8,10 @@ android {
     namespace = "ch.hearc.ig.citymobis"
     compileSdk = 34
 
+    packaging {
+        pickFirst("META-INF/INDEX.LIST")
+    }
+
     defaultConfig {
         applicationId = "ch.hearc.ig.citymobis"
         minSdk = 27
@@ -56,7 +60,6 @@ android {
 
 dependencies {
     implementation ("com.google.ar:core:1.40.0")
-    implementation("com.google.ar.sceneform.ux:sceneform-ux:1.17.1")
     implementation ("com.google.cloud:google-cloud-storage:2.1.0")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -67,27 +70,31 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.1")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3:1.1.2")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation ("io.github.sceneview:arsceneview:1.2.4")
-    implementation ("io.github.sceneview:sceneview:1.2.4")
+    implementation("io.github.sceneview:arsceneview:1.2.6")
     implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
-    implementation ("com.google.firebase:firebase-cloud-anchors:1.4.2")
+    implementation("com.google.android.gms:play-services-auth:16+")
+    androidTestImplementation("junit:junit:4.12")
+    androidTestImplementation("androidx.test:core:1.4.0")
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.ext:truth:1.4.0")
+    androidTestImplementation( "androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation( "androidx.test.espresso:espresso-contrib:3.5.1")
+    androidTestImplementation( "androidx.test.espresso:espresso-intents:3.5.1")
+    androidTestImplementation( "androidx.test.espresso:espresso-accessibility:3.5.1")
+    androidTestImplementation( "androidx.test.espresso:espresso-web:3.5.1")
+    androidTestImplementation( "androidx.test.espresso.idling:idling-concurrent:3.5.1")
+    androidTestImplementation( "androidx.test.espresso:espresso-idling-resource:3.5.1")
 
 
 }
