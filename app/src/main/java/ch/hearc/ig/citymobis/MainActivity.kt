@@ -1,71 +1,93 @@
 package ch.hearc.ig.citymobis
 
-import android.net.Uri
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.layout.Box
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import ch.hearc.ig.citymobis.ui.theme.*
-import io.github.sceneview.*
-import io.github.sceneview.ar.*
-import io.github.sceneview.ar.node.AnchorNode
-import io.github.sceneview.model.ModelInstance
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import com.google.firebase.storage.FirebaseStorage
+import io.github.sceneview.Scene
+import io.github.sceneview.loaders.ModelLoader
 import io.github.sceneview.node.ModelNode
-
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            CitymobisTheme {
-                ARScreen()
-            }
-        }
-    }
-}
+import io.github.sceneview.node.Node
+import io.github.sceneview.rememberEngine
+import io.github.sceneview.rememberModelLoader
+import io.github.sceneview.rememberNodes
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
-fun ARScreen() {
+fun ModelScreen() {
     val nodes = rememberNodes()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        ARScene(
-            modifier = Modifier,
+        Scene(
+            activity = LocalContext.current as? ComponentActivity,
+            lifecycle = LocalLifecycleOwner.current.lifecycle,
             childNodes = nodes,
-            /*onTapAR = { motionEvent, hitResult ->
-            onTap currently causing issues, TODO: fix
-                // Fetch your 3D model from Firebase
-                // For simplicity, assuming you have a function getModelFromFirebase() that returns a ModelInstance
-                val modelInstance = getModelFromFirebase()
-
-                // Create an AnchorNode with the hit result and add it to the nodes
-                val anchorNode = AnchorNode(hitResult.createAnchor()).apply {
-                    addChildNode(ModelNode(modelInstance))
-                }
-                nodes += anchorNode
-            },
-            // Other ARScene parameters as needed
-            // ...*/
+            engine = rememberEngine(),
         )
     }
 }
 
-// Dummy function for fetching model - Replace with actual Firebase fetching logic
-fun getModelFromFirebase(): ModelInstance? {
-    // Implement logic to fetch and return a ModelInstance from Firebase
-    // This is just a placeholder
-    // TODO: add 3D models to firebase
-    return null
+fun loadModel(nodes: SnapshotStateList<Node>, modelLoader: ModelLoader, modelPath: String) {
+    val modelNode = ModelNode(
+        modelInstance = modelLoader.createModelInstance(modelPath),
+        autoAnimate = true
+    )
+    nodes.add(modelNode)
 }
 
+suspend fun downloadFile(storageUrl: String, localPath: String, onSuccess: (File) -> Unit, onFailure: (Exception) -> Unit) {
+    val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(storageUrl)
+    val localFile = File(localPath)
 
+    try {
+        storageRef.getFile(localFile).await()
+        onSuccess(localFile)
+    } catch (e: Exception) {
+        onFailure(e)
+        Log.e("firebase", "File download failed: ${e.message}")
+    }
+}
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            val modelLoader = rememberModelLoader(rememberEngine())
+            val nodes = rememberNodes()
+
+            ModelScreen()
+            val storageUrl = "gs://citymobis-89b20.appspot.com/ImageToStl.com_eglise_rouge3.glb"
+            val localFilePath = "${filesDir}/eglise_rouge3.glb"
+
+            LaunchedEffect(Unit) {
+                downloadFile(
+                    storageUrl,
+                    localFilePath,
+                    onSuccess = { file ->
+                        Log.d("firebase", "File downloaded successfully: ${file.path}")
+                        // Load the model after successful download
+                        loadModel(nodes, modelLoader, file.path)
+                    },
+                    onFailure = { exception ->
+                        Log.e("firebase", "Error downloading file: ${exception.message}")
+                        // Additional failure handling
+                    }
+                )
+            }
+
+        }
+    }
+}
