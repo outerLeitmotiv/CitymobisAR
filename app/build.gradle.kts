@@ -75,9 +75,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("io.github.sceneview:arsceneview:1.2.6")
+
     implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
-    implementation("com.google.firebase:firebase-database-ktx")
-    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-storage:20.0.0")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.firebaseui:firebase-ui-database:8.0.2")
@@ -95,6 +95,7 @@ dependencies {
     androidTestImplementation( "androidx.test.espresso:espresso-web:3.5.1")
     androidTestImplementation( "androidx.test.espresso.idling:idling-concurrent:3.5.1")
     androidTestImplementation( "androidx.test.espresso:espresso-idling-resource:3.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
 
 }
