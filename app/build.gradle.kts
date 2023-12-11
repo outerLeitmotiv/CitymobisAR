@@ -57,4 +57,5 @@ dependencies {
     implementation ("androidx.compose.ui:ui-tooling-preview:1.5.4")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation ("com.esri.arcgisruntime:arcgis-android-toolkit:100.15.0")
+    implementation ("com.esri:arcgis-maps-kotlin:200.3.0")
 }
